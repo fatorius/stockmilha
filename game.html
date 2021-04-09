@@ -31,10 +31,41 @@
 				if (!checkEvaluation(goodN, regularN)){
 					alert("Your answer isn't valid")
 				}
-				else if (goodN == 4){
+				else if (goodN == 4 && whoStarts == BOT){
+					alert("The computer got your number, but since it started guessing, you still have one chance to draw this game.");
+					isLastRound = true;
+					document.getElementById("guesserdiv").remove();
+					guessing();
+				}
+				else if (goodN == 4 && isLastRound){
+					document.getElementById("guesserdiv").remove();
+					
+					var message = document.createElement("P");
+					message.innerHTML = "Very good! This game is a tie."
+					
+					var botao = document.createElement("button");
+					botao.innerHTML = "Play again";
+					botao.setAttribute("onclick", "reload()");
+
+					document.body.appendChild(message);
+					document.body.appendChild(botao);
+				}
+				else if (goodN == 4 && whoStarts == PLAYER){
 					var message = document.createElement("P");
 					message.innerHTML = "The computer has won the game!"
 
+					var botao = document.createElement("button");
+					botao.innerHTML = "Play again";
+					botao.setAttribute("onclick", "reload()");
+
+					document.body.appendChild(message);
+					document.body.appendChild(botao);
+				}
+				
+				else if (goodN != 4 && isLastRound){
+					var message = document.createElement("P");
+					message.innerHTML = "Congratulations! You won, the computer couldn't tie this game by getting your number correctly!"
+					
 					var botao = document.createElement("button");
 					botao.innerHTML = "Play again";
 					botao.setAttribute("onclick", "reload()");
@@ -69,7 +100,34 @@
 
 					document.getElementById("guessingdiv").remove();
 
-					if (evaluation.bulls == 4){
+					if (evaluation.bulls == 4 && isLastRound){
+						var message = document.createElement("P");
+						message.innerHTML = "Very good! This game is a tie."
+
+						var botao = document.createElement("button");
+						botao.innerHTML = "Play again";
+						botao.setAttribute("onclick", "reload()");
+
+						document.body.appendChild(message);
+						document.body.appendChild(botao);
+					}
+					else if (evaluation.bulls != 4 && isLastRound){
+						var message = document.createElement("P");
+						message.innerHTML = "The computer won, you couldn't get its number right."
+
+						var botao = document.createElement("button");
+						botao.innerHTML = "Play again";
+						botao.setAttribute("onclick", "reload()");
+
+						document.body.appendChild(message);
+						document.body.appendChild(botao);
+					}
+					else if (evaluation.bulls == 4 && whoStarts == PLAYER){
+						alert("You got the number correctly, but since you started guessing, the bot still has one chance to draw this game by getting your number.");
+						isLastRound = true;
+						answering();
+					}
+					else if (evaluation.bulls == 4 && whoStarts == BOT){
 						var message = document.createElement("P");
 						message.innerHTML = "You have won this game! Congratulations!"
 
@@ -160,7 +218,7 @@
 				bullsinput.setAttribute("name", "cows");
 				bullsinput.setAttribute("max", "4");
 				bullsinput.setAttribute("min", "0");
-				bullsinput.setAttribute("placeholder", "Insert the number of cows");
+				bullsinput.setAttribute("placeholder", "Insert the number of bulls");
 
 				var botao = document.createElement("button");
 				botao.setAttribute("onclick", "computeAnswer()");
