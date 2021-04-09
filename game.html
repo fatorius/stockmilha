@@ -1,0 +1,208 @@
+<!--hugosouza 2021-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="stockmilha.js"></script>			
+
+		<title>Play Cows and Bulls against Stockmilha</title>
+
+		<script>
+			// declaring all of the variables
+			var whoStarts;
+
+			var bot = new Stockmilha();
+		</script>
+	</head>
+
+	<body>
+		<header>
+            <h1>Play Cows and Bulls against Stockmilha</h1>
+		</header>
+
+		<script>
+			function reload(){
+				location.reload();
+			}
+
+			function computeAnswer(){
+				var goodN = parseInt(document.getElementById("bullsinput").value);
+				var regularN = parseInt(document.getElementById("cowsinput").value);
+
+				if (!checkEvaluation(goodN, regularN)){
+					alert("Your answer isn't valid")
+				}
+				else if (goodN == 4){
+					var message = document.createElement("P");
+					message.innerHTML = "The computer has won the game!"
+
+					var botao = document.createElement("button");
+					botao.innerHTML = "Play again";
+					botao.setAttribute("onclick", "reload()");
+
+					document.body.appendChild(message);
+					document.body.appendChild(botao);
+				}
+				else{
+					document.getElementById("guesserdiv").remove();
+					if (bot.updateCandidates(goodN, regularN)){
+						console.log(bot.candidateGuesses.length + " candidates remaining");
+						guessing();
+					}
+					else{
+						var message = document.createElement("P");
+						message.innerHTML = "A contradiction has been detected in your answers, the game has been aborted."
+
+						var botao = document.createElement("button");
+						botao.innerHTML = "Play again";
+						botao.setAttribute("onclick", "reload()");
+
+						document.body.appendChild(message);
+						document.body.appendChild(botao);
+					}
+				}
+			}
+			function botEvaluateGuessing(){
+				var currentGuess = document.getElementById("guess").value;
+
+				if (isNumberValid(currentGuess)){
+					var evaluation = evaluateGuess(currentGuess, bot.number);
+
+					document.getElementById("guessingdiv").remove();
+
+					if (evaluation.bulls == 4){
+						var message = document.createElement("P");
+						message.innerHTML = "You have won this game! Congratulations!"
+
+						var botao = document.createElement("button");
+						botao.innerHTML = "Play again";
+						botao.setAttribute("onclick", "reload()");
+
+						document.body.appendChild(message);
+						document.body.appendChild(botao);
+					}
+					else{		
+						var resultsDiv = document.createElement("div");
+						resultsDiv.setAttribute("id", "resultsdiv");
+
+						var resultsTitle = document.createElement("h2");
+						resultsTitle.innerHTML = "The results of your guess were:";
+
+						var result = document.createElement("p");
+						result.innerHTML = evaluation.bulls + " bulls and " + evaluation.cows + " cows";
+
+						
+						var actionButton = document.createElement("button");
+						actionButton.innerHTML = "Ok";
+						actionButton.setAttribute("onclick", "answering()");
+
+						resultsDiv.appendChild(resultsTitle);
+						resultsDiv.appendChild(result);
+						resultsDiv.appendChild(actionButton);
+						
+						document.body.appendChild(resultsDiv);
+					}
+				}
+				else{
+					alert("Your guess isn't valid, there must no be repeated digits within your number");
+				}
+			}
+			function guessing(){
+				var currentDiv = document.createElement("div");
+				currentDiv.setAttribute("id", "guessingdiv");
+
+				var currentForm = document.createElement("form");
+				var guessInput = document.createElement("input");
+				var title = document.createElement("h2");
+				var actionButton = document.createElement("button");
+				
+				title.innerHTML = "It's your turn to make a guess";
+				actionButton.innerHTML = "Ok";
+
+				guessInput.setAttribute("id", "guess");
+				guessInput.setAttribute("value", "");
+				guessInput.setAttribute("name", "guessfield");
+				guessInput.setAttribute("placeholder", "Type your guess");
+
+				actionButton.setAttribute("onclick", "botEvaluateGuessing()");
+
+				currentDiv.appendChild(title);
+				currentForm.appendChild(guessInput);
+				currentDiv.appendChild(currentForm);
+				currentDiv.appendChild(actionButton);
+				document.body.appendChild(currentDiv);
+			}
+			function answering(){
+				try {
+					document.getElementById("resultsdiv").remove();
+				} catch (e) {
+					console.log(e);
+				}
+
+				var currentDiv = document.createElement("div");
+				currentDiv.setAttribute("id", "guesserdiv");
+			
+				var palpite = document.createElement("p");
+				palpite.innerHTML = "Meu palpite é " + bot.makeAGuess();
+
+				var formulary = document.createElement("form");
+				var cowsinput = document.createElement("input");
+				var bullsinput = document.createElement("input");
+
+				cowsinput.setAttribute("id", "cowsinput");
+				cowsinput.setAttribute("type", "number");
+				cowsinput.setAttribute("name", "cows");
+				cowsinput.setAttribute("max", "4");
+				cowsinput.setAttribute("min", "0");
+				cowsinput.setAttribute("placeholder", "Insert the number of cows");
+
+				bullsinput.setAttribute("id", "bullsinput");
+				bullsinput.setAttribute("type", "number");
+				bullsinput.setAttribute("name", "cows");
+				bullsinput.setAttribute("max", "4");
+				bullsinput.setAttribute("min", "0");
+				bullsinput.setAttribute("placeholder", "Insert the number of cows");
+
+				var botao = document.createElement("button");
+				botao.setAttribute("onclick", "computeAnswer()");
+				botao.innerHTML = "Ok";
+
+				formulary.appendChild(cowsinput);
+				formulary.appendChild(bullsinput);
+
+				currentDiv.appendChild(palpite);
+				currentDiv.appendChild(formulary);
+				currentDiv.appendChild(botao);
+
+				document.body.appendChild(currentDiv);
+				
+			}
+			function startgame(){
+				document.getElementById("startdiv").remove();
+
+				whoStarts = decideWhoGoesFirst();
+
+				if (whoStarts == PLAYER){
+					guessing();
+				}
+				else{
+					answering();
+				}
+			}
+		</script>
+
+        
+		<div id="startdiv">
+				
+			<button onclick="startgame()">Start playing</button>
+
+		</div>
+	</body>
+
+	<style>
+		input{
+			display: block;
+			width: 300px;
+		}
+	</style>
+
+</html>
