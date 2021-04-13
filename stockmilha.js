@@ -96,7 +96,7 @@ class Stockmilha{
     }
 
     makeAGuess(){
-        this.currentGuess =  this.valid_numbers[Math.floor(Math.random() * this.valid_numbers.length)];
+        this.currentGuess =  this.candidateGuesses[Math.floor(Math.random() * this.candidateGuesses.length)];
         return this.currentGuess;
     }
 
